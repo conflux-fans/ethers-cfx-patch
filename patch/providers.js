@@ -3,7 +3,6 @@ const providersMod = require("@ethersproject/providers")
 
 
 function overwriteProvidersMod() {
-    console.log("overwrite providers mod")
     _oFormatterTransactionResponse()
     _oJsonRpcProviderHexlifyTransaction()
     _oBaseProviderGetAddress()
@@ -38,9 +37,7 @@ function _oJsonRpcProviderHexlifyTransaction(){
 
 function _oBaseProviderGetAddress(){
     let oldMethod = providersMod.BaseProvider.prototype._getAddress
-    console.log("baseprovider getaddress oldMethod", oldMethod.toString())
     providersMod.BaseProvider.prototype._getAddress = function (addressOrName) {
-        console.log("aaa")
         if(isValidCfxAddress(addressOrName)){
             return addressOrName
         }
