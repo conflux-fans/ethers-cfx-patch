@@ -1,9 +1,12 @@
-const { formatHexAddressIfy } = require("../utils")
+const { formatHexAddressIfy, isValidCfxAddress } = require("../utils")
 const providersMod = require("@ethersproject/providers")
 
+
 function overwriteProvidersMod() {
+    console.log("overwrite providers mod")
     _oFormatterTransactionResponse()
     _oJsonRpcProviderHexlifyTransaction()
+    _oBaseProviderGetAddress()
 }
 
 function _oFormatterTransactionResponse(){
@@ -30,6 +33,18 @@ function _oJsonRpcProviderHexlifyTransaction(){
         let hexlified = oldMethod.call(this, transaction, allowExtra);
         [hexlified.from, hexlified.to] = [from, to]
         return hexlified
+    }
+}
+
+function _oBaseProviderGetAddress(){
+    let oldMethod = providersMod.BaseProvider.prototype._getAddress
+    console.log("baseprovider getaddress oldMethod", oldMethod.toString())
+    providersMod.BaseProvider.prototype._getAddress = function (addressOrName) {
+        console.log("aaa")
+        if(isValidCfxAddress(addressOrName)){
+            return addressOrName
+        }
+        return oldMethod.call(this,addressOrName)
     }
 }
 

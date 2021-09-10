@@ -13,8 +13,8 @@ function _oContractFactoryDeploy() {
     const oldMethod = contractsMod.ContractFactory.prototype.deploy
     contractsMod.ContractFactory.prototype.deploy = async function (...args) {
 
-        if (!isValidCfxAddress(this.signer.getAddress)) {
-            return oldMethod(...args)
+        if (!isValidCfxAddress(await this.signer.getAddress())) {
+            return oldMethod.call(this,...args)
         }
 
         let overrides = {};

@@ -1,6 +1,6 @@
-const { CfxWallet, utils } = require("ethers-cfx-patch")
+const { CfxWallet, utils } = require("../index")
 const { ethers, ContractFactory } = require("ethers");
-const JsonRpcProxy = require("web3-provider-proxy");
+const JsonRpcProxy = require("web3-providers-http-proxy");
 
 const cfxProxy = new JsonRpcProxy("http://test.confluxrpc.com")
 const p = new ethers.providers.Web3Provider(cfxProxy)
@@ -9,6 +9,7 @@ let networkId, user, contract, txhash, tx
 
 async function init() {
     networkId = (await p.getNetwork()).chainId
+    console.log("networkId: ", networkId)
     user = utils.formatCfxAddress("0x19f4bcf113e0b896d9b34294fd3da86b4adf0302", networkId)
     contract = utils.formatCfxAddress("0x85c1e90cafca11e3ed9486f32750fdefb46f9da", networkId)
     txhash = "0x83d9aa5bdf5e453cbd9c777ebc30cd91ffa407b03080c5bb52cb883a3f448b0b"
@@ -21,13 +22,14 @@ async function init() {
 (async function run() {
     console.log("start")
     try {
+        // await p.getBalance(user)
         await init()
         await basic()
-        await sendTxByRemote()
-        await sendTxByPrivateKey()
-        await sendTxByAccount()
-        await sendTxByHDNode()
-        await doContract()
+        // await sendTxByRemote()
+        // await sendTxByPrivateKey()
+        // await sendTxByAccount()
+        // await sendTxByHDNode()
+        // await doContract()
     } catch (err) {
         console.error(err)
     }

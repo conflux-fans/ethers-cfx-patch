@@ -1,3 +1,4 @@
+console.log("bbb")
 const { overwriteAbiMod } = require("./abi")
 const { overwriteAddressMod } = require("./address")
 const { overwriteBytesMod } = require("./bytes")
@@ -7,6 +8,7 @@ const { overwriteTransactionsMod } = require("./transactions")
 const { overwritePropertiesMod } = require("./properties")
 
 function patch() {
+    console.log("patch")
     overwritePropertiesMod()
     overwriteAbiMod()
     overwriteAddressMod()
