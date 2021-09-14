@@ -1,7 +1,7 @@
 const { overwriteAbiMod } = require("./abi")
 const { overwriteAddressMod } = require("./address")
 const { overwriteBytesMod } = require("./bytes")
-const { overwriteContractsMod } = require("./contracts")
+// const { overwriteContractsMod } = require("./contracts")
 const { overwriteProvidersMod } = require("./providers")
 const { overwriteTransactionsMod } = require("./transactions")
 const { overwritePropertiesMod } = require("./properties")
@@ -11,7 +11,7 @@ function patch() {
     overwriteAbiMod()
     overwriteAddressMod()
     overwriteBytesMod()
-    overwriteContractsMod()
+    // overwriteContractsMod()
     overwriteProvidersMod()
     overwriteTransactionsMod()
 }

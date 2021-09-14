@@ -11,6 +11,7 @@ const { randomBytes } = require("@ethersproject/random")
 const { decryptJsonWallet, decryptJsonWalletSync, } = require("@ethersproject/json-wallets")
 const { CFXMnemonicPath } = require("./utils")
 const { Logger } = require("@ethersproject/logger");
+const debug = require("debug")("cfxwallet")
 
 const logger = new Logger("cfxwallet")
 
@@ -87,7 +88,7 @@ class CfxWallet extends Wallet {
             const epochNum = await this.provider.getBlockNumber()
             transaction.epochHeight = epochNum
         }
-        
+
         return transaction
     }
 
@@ -99,6 +100,9 @@ class CfxWallet extends Wallet {
         const txhash = keccak256(tx.encode(false))
         const sig = this._signingKey().signDigest(txhash);
         [tx.r, tx.s, tx.v] = [sig.r, sig.s, sig.v - 27]
+
+        debug('cfx signtx %o', { txhash, sign: tx.sign(this._signingKey().privateKey, Number.parseInt(tx.chainId)) })
+        debug('eth signtx %o', { txhash, tx, recover: tx.recover() })
 
         return Promise.resolve(tx.serialize())
     }
@@ -130,7 +134,7 @@ class CfxWallet extends Wallet {
         if (!path) { path = CFXMnemonicPath }
         return new CfxWallet(HDNode.fromMnemonic(mnemonic, null, wordlist).derivePath(path), null, networkId);
     }
-    
+
 }
 
 module.exports = { CfxWallet }

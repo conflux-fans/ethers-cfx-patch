@@ -1,6 +1,8 @@
 const { CfxWallet, utils } = require("../index")
 const { ethers, ContractFactory } = require("ethers");
-const JsonRpcProxy = require("web3-providers-http-proxy");
+// const JsonRpcProxy = require("web3-providers-http-proxy");
+const JsonRpcProxy = require("/Users/wangdayong/myspace/mytemp/test-ethers-cfx-patch/node_modules/web3-providers-http-proxy");
+
 
 const cfxProxy = new JsonRpcProxy("http://test.confluxrpc.com")
 const p = new ethers.providers.Web3Provider(cfxProxy)
@@ -26,10 +28,10 @@ async function init() {
         await init()
         await basic()
         // await sendTxByRemote()
-        // await sendTxByPrivateKey()
-        // await sendTxByAccount()
-        // await sendTxByHDNode()
-        // await doContract()
+        await sendTxByPrivateKey()
+        await sendTxByAccount()
+        await sendTxByHDNode()
+        await doContract()
     } catch (err) {
         console.error(err)
     }

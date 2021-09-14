@@ -1,9 +1,12 @@
 const cfxsdk = require("js-conflux-sdk");
 const { RLP } = require("ethers/lib/utils");
-const { isCfxTransaction, formatCfxAddressIfy } = require("../utils")
+const { isCfxTransaction, formatCfxAddressIfy, formatCfxAddress, formatRecoverTx } = require("../utils")
 const txsMod = require("@ethersproject/transactions")
 const bytesMod = require("@ethersproject/bytes")
 const { keccak256 } = require("@ethersproject/keccak256")
+const { Transaction } = require("js-conflux-sdk")
+const { publicKeyToAddress } = cfxsdk.sign;
+const debug = require("debug")("patch/transactions")
 
 function overwriteTransactionsMod() {
     _oParse()
@@ -14,18 +17,30 @@ function _oParse() {
     // 替换Parse，pase作用是rawTx->tx
     const oldMethod = txsMod.parse
     txsMod.parse = function (rawTransaction) {
-        let [utx, v, r, s] = RLP.decode(rawTransaction)
+        const [utx, v, r, s] = RLP.decode(rawTransaction)
+        debug("decoded transaction: %o", [utx, v, r, s])
         if (utx.length == 9) {
-            let [nonce, gasPrice, gas, to, value, storageLimit, epochHeight, chainId, data] = utx
-            let tx = {
+            const [nonce, gasPrice, gas, to, value, storageLimit, epochHeight, chainId, data] = utx
+            const tx = {
                 nonce, gasPrice, gas, to, value, storageLimit, epochHeight, chainId, data, v, r, s
             }
-            let ethtx = {
+
+            let fTx = formatRecoverTx(tx)
+            debug('formated tx for recover %o', fTx)
+            const publicKey = new Transaction(fTx).recover()
+
+            const hexFrom = publicKeyToAddress(Buffer.from(publicKey.substr(2), 'hex'))
+            const cfxFrom = formatCfxAddress(hexFrom, Number.parseInt(chainId))
+            const cfxTo = formatCfxAddressIfy(tx.to, Number.parseInt(tx.chainId))
+
+            const ethtx = {
                 ...tx,
+                from: cfxFrom,
+                to: cfxTo,
                 gasLimit: tx.gas,
-                to: formatCfxAddressIfy(tx.to, Number.parseInt(tx.chainId)),
                 hash: keccak256(rawTransaction)
             }
+            debug("adapted ethtx: %o", ethtx)
             return ethtx
         }
         return oldMethod(rawTransaction)
@@ -38,7 +53,6 @@ function _oSerialize() {
         if (isCfxTransaction(utx)) {
             utx.gas = utx.gas || utx.gasLimit
             const _tx = new cfxsdk.Transaction({ ...utx, ...sig })
-            // console.log("formated tx", _tx)
             const signedBuff = _tx.encode(!!sig)
             return bytesMod.hexlify(signedBuff)
         }

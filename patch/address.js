@@ -1,5 +1,5 @@
 const addressMod = require("@ethersproject/address")
-const { isCfxTransaction, isValidCfxAddress } = require("../utils")
+const { isCfxTransaction, isValidCfxAddress, calcContractAddress } = require("../utils")
 
 function overwriteAddressMod() {
     _oGetAddress()
@@ -20,7 +20,8 @@ function _oGetContractAddress() {
     const oldMethod = addressMod.getContractAddress
     addressMod.getContractAddress = function (transaction) {
         if (isCfxTransaction(transaction)) {
-            throw new Error("could not get contract address by address and nonce in conflux network")
+            let { from, nonce, data } = transaction
+            return calcContractAddress(from, nonce, data)
         }
         return oldMethod(transaction)
     }
