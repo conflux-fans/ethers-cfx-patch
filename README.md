@@ -28,6 +28,22 @@ const cfxProxy = new JsonRpcProxy("http://localhost:12537")
 const povider = new ethers.providers.Web3Provider(cfxProxy)
 ```
 
+#### **Note**
+
+##### Auto setted fields
+The [`JsonRpcProxy`](https://github.com/conflux-fans/web3-provider-proxy) is a rpc proxy which adapt conflux rpc methods to ethereum rpc methods, and some concepts are auto handled for user, there are
+
+rpc method `cfx_sendTransaction`
+- storageLimit
+- epochHeight
+
+##### Difference with actual
+
+All of fields `block number` in eth rpc request or response are correspending to `epoch number` in `JsonRpcProxy`, and sametime there also concept `block number` in conflux but is hidden in `JsonRpcProxy`, so if you use `eth_getBlockNumber` it will return `epoch number` of conflux, and currently could not get real block number use `JsonRpcProxy`.
+
+So please don't use JsonRpcProxy to do bussiness dependencies `block number`. The bussiness dependencies `Transaction` and `Events` are not impacted.
+
+
 ### CfxWallet
 The CfxWallet is used for sign, sendTransaction, deploy contract in cfx format. It need one more param `networkId` which could access by `provider.getNetowrk` to create an instance.
 
