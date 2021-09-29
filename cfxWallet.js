@@ -1,17 +1,19 @@
-const { Wallet } = require("@ethersproject/wallet")
-const { keccak256 } = require("@ethersproject/keccak256")
+const { CFXMnemonicPath, computeCfxAddress, requireIfy , isPackagesExist} = require("./utils")
+const debug = require("debug")("cfxWallet")
+
+if(!_isAllPackagesExists()) return
+
+const { Wallet } = requireIfy("@ethersproject/wallet")
+const { keccak256 } = requireIfy("@ethersproject/keccak256")
 const { Transaction, format } = require("js-conflux-sdk")
-const { computeAddress } = require("@ethersproject/transactions")
-const { computeCfxAddress } = require("./utils")
-const { defineReadOnly } = require("@ethersproject/properties")
-const { SigningKey } = require("@ethersproject/signing-key")
-const { HDNode, entropyToMnemonic } = require("@ethersproject/hdnode")
-const { arrayify, concat, hexDataSlice, isHexString } = require("@ethersproject/bytes")
-const { randomBytes } = require("@ethersproject/random")
-const { decryptJsonWallet, decryptJsonWalletSync, } = require("@ethersproject/json-wallets")
-const { CFXMnemonicPath } = require("./utils")
-const { Logger } = require("@ethersproject/logger");
-const debug = require("debug")("cfxwallet")
+const { computeAddress } = requireIfy("@ethersproject/transactions")
+const { defineReadOnly } = requireIfy("@ethersproject/properties")
+const { SigningKey } = requireIfy("@ethersproject/signing-key")
+const { HDNode, entropyToMnemonic } = requireIfy("@ethersproject/hdnode")
+const { arrayify, concat, hexDataSlice, isHexString } = requireIfy("@ethersproject/bytes")
+const { randomBytes } = requireIfy("@ethersproject/random")
+const { decryptJsonWallet, decryptJsonWalletSync, } = requireIfy("@ethersproject/json-wallets")
+const { Logger } = requireIfy("@ethersproject/logger");
 
 const logger = new Logger("cfxwallet")
 
@@ -135,6 +137,30 @@ class CfxWallet extends Wallet {
         return new CfxWallet(HDNode.fromMnemonic(mnemonic, null, wordlist).derivePath(path), null, networkId);
     }
 
+}
+
+
+function _isAllPackagesExists() {
+    const result = isPackagesExist(
+        [
+            "@ethersproject/wallet",
+            "@ethersproject/keccak256",
+            "@ethersproject/transactions",
+            "@ethersproject/properties",
+            "@ethersproject/signing-key",
+            "@ethersproject/hdnode",
+            "@ethersproject/bytes",
+            "@ethersproject/random",
+            "@ethersproject/json-wallets",
+            "@ethersproject/logger"
+        ]
+    )
+
+    if (!result.isAllExists) {
+        debug(`not exist dependencies: ${result.notExists}`)
+        return false
+    }
+    return true
 }
 
 module.exports = { CfxWallet }

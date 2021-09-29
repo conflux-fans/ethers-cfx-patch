@@ -1,8 +1,13 @@
-const { defineReadOnly } = require("@ethersproject/properties")
-const contractsMod = require("@ethersproject/contracts");
-const { isValidCfxAddress } = require("../utils");
+const { isValidCfxAddress ,requireIfy} = require("../utils");
+const contractsMod = requireIfy("@ethersproject/contracts");
+const propertisMod = requireIfy("@ethersproject/properties")
+const debug = require("debug")("path/contracts")
 
 function overwriteContractsMod() {
+    if(!contractsMod || !propertisMod){
+        debug("contracts mod or properties mod not exist")
+        return 
+    }
     _oContractFactoryDeploy()
 }
 
@@ -39,7 +44,7 @@ function _oContractFactoryDeploy() {
         const { contractAddress } = await tx.wait(1)
 
         const contract = contractsMod.ContractFactory.getContract(contractAddress, this.interface, this.signer)
-        defineReadOnly(contract, "deployTransaction", tx);
+        propertisMod.defineReadOnly(contract, "deployTransaction", tx);
         return contract;
     }
 }

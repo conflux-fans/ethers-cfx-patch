@@ -1,7 +1,12 @@
-const { isValidCfxAddress, formatHexAddress } = require("../utils")
-const bytesMod = require("@ethersproject/bytes")
+const { isValidCfxAddress, formatHexAddress,requireIfy } = require("../utils")
+const bytesMod = requireIfy("@ethersproject/bytes")
+const debug = require("debug")("path/bytes")
 
 function overwriteBytesMod() {
+    if(!bytesMod){
+        debug("bytes Mod not exist")
+        return 
+    }
     _oHexlify()
 }
 

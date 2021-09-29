@@ -1,7 +1,12 @@
-const addressMod = require("@ethersproject/address")
-const { isCfxTransaction, isValidCfxAddress, calcContractAddress } = require("../utils")
+const { isCfxTransaction, isValidCfxAddress, calcContractAddress,requireIfy } = require("../utils")
+const addressMod = requireIfy("@ethersproject/address")
+const debug = require("debug")("path/address")
 
 function overwriteAddressMod() {
+    if(!addressMod){
+        debug("address mod not exist")
+        return 
+    }
     _oGetAddress()
     _oGetContractAddress()
 }

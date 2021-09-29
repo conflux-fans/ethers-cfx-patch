@@ -1,6 +1,12 @@
-const propertiesMod = require("@ethersproject/properties")
+const { requireIfy } = require("../utils");
+const propertiesMod = requireIfy("@ethersproject/properties")
+const debug = require("debug")("path/properties")
 
 function overwritePropertiesMod() {
+    if(!propertiesMod){
+        debug("properties mod not exist")
+        return 
+    }
     _oDefineReadonly()
 }
 

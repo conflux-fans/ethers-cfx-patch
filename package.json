@@ -1,6 +1,6 @@
 {
   "name": "ethers-cfx-patch",
-  "version": "0.1.1-alpha",
+  "version": "0.1.1-beta",
   "description": "ethers-cfx-patch is used for compatiable ethers with conflux network",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "debug": "^4.3.2",
-    "ethers": "^5.4.4",
     "js-conflux-sdk": "^1.7.0"
   },
   "devDependencies": {

@@ -1,6 +1,9 @@
+const { isCfxTransaction, formatCfxAddressIfy, formatCfxAddress, formatRecoverTx, isPackagesExist } = require("../utils")
+
+if (!_isAllPackagesExists()) return
+
 const cfxsdk = require("js-conflux-sdk");
-const { RLP } = require("ethers/lib/utils");
-const { isCfxTransaction, formatCfxAddressIfy, formatCfxAddress, formatRecoverTx } = require("../utils")
+const RLP = require("@ethersproject/rlp");
 const txsMod = require("@ethersproject/transactions")
 const bytesMod = require("@ethersproject/bytes")
 const { keccak256 } = require("@ethersproject/keccak256")
@@ -59,5 +62,23 @@ function _oSerialize() {
         return oldMethod(utx, sig)
     }
 }
+
+function _isAllPackagesExists() {
+    const result = isPackagesExist(
+        [
+            "@ethersproject/rlp",
+            "@ethersproject/transactions",
+            "@ethersproject/bytes",
+            "@ethersproject/keccak256"
+        ]
+    )
+
+    if (!result.isAllExists) {
+        debug(`not exist dependencies: ${result.notExists}`)
+        return false
+    }
+    return true
+}
+
 
 module.exports = { overwriteTransactionsMod }

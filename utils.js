@@ -1,9 +1,12 @@
 const { format } = require("js-conflux-sdk");
 const { ethAddressToCfxAddress, isValidCfxAddress, decodeCfxAddress } = require("js-conflux-sdk").address
-const { computeAddress } = require("@ethersproject/transactions")
-const { isHexString } = require("@ethersproject/bytes")
-const { keccak256 } = require("ethers/lib/utils")
 const debug = require("debug")("utils")
+
+if (!returnIfNotAllPackagesExists()) return;
+
+const { computeAddress } = requireIfy("@ethersproject/transactions")
+const { isHexString } = requireIfy("@ethersproject/bytes")
+const { keccak256 } = requireIfy("@ethersproject/keccak256")
 
 function computeCfxAddress(key, networkId) {
     let ethAddress = computeAddress(key)
@@ -98,6 +101,64 @@ function calcContractAddress(sender, nonce, initCode) {
     return contractAddress
 }
 
+function requireIfy(name) {
+    try {
+        return require(name)
+    } catch {
+        return undefined
+    }
+}
+
+function isPackagesExist(packages) {
+    // const requires = [
+    //     "@ethersproject/transactions",
+    //     "@ethersproject/bytes",
+    //     "@ethersproject/keccak256"
+    // ]
+    const result = packages.map(requireIfy).reduce((acc, val, i) => {
+        if (!val) {
+            acc.notExists.push(packages[i])
+            acc.isAllExist = false
+        }
+    }, {
+        isAllExist: true,
+        notExists: []
+    })
+    return result
+}
+
+
+// return module.exports if dependency not exists
+function returnIfNotAllPackagesExists() {
+    const result = isPackagesExist(
+        [
+            "@ethersproject/transactions",
+            "@ethersproject/bytes",
+            "@ethersproject/keccak256"
+        ]
+    )
+
+    if (!result.isAllExists) {
+        debug(`not exist dependencies: ${result.notExists}`)
+        module.exports = {
+            isCfxTransaction,
+            isValidCfxAddress,
+            formatCfxAddress: format.address,
+            formatHexAddress: format.hexAddress,
+            formatHexAddressIfy,
+            formatCfxAddressIfy,
+            formatRecoverTx,
+            CFXMnemonicPath: "m/44'/503'/0'/0/0",
+            // computeCfxAddress,
+            // hex2LittleEndingBuffer,
+            // calcContractAddress,
+            requireIfy,
+        }
+        return false
+    }
+    return true
+}
+
 
 module.exports = {
     isCfxTransaction,
@@ -110,5 +171,7 @@ module.exports = {
     CFXMnemonicPath: "m/44'/503'/0'/0/0",
     computeCfxAddress,
     hex2LittleEndingBuffer,
-    calcContractAddress
+    calcContractAddress,
+    requireIfy,
+    isPackagesExist
 }
