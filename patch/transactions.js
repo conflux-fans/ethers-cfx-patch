@@ -1,5 +1,5 @@
 const { isCfxTransaction, formatCfxAddressIfy, formatCfxAddress, formatRecoverTx, isPackagesExist } = require("../utils")
-
+const debug = require("debug")("patch/transactions")
 if (!_isAllPackagesExists()) return
 
 const cfxsdk = require("js-conflux-sdk");
@@ -9,7 +9,7 @@ const bytesMod = require("@ethersproject/bytes")
 const { keccak256 } = require("@ethersproject/keccak256")
 const { Transaction } = require("js-conflux-sdk")
 const { publicKeyToAddress } = cfxsdk.sign;
-const debug = require("debug")("patch/transactions")
+
 
 function overwriteTransactionsMod() {
     _oParse()
@@ -73,8 +73,9 @@ function _isAllPackagesExists() {
         ]
     )
 
-    if (!result.isAllExists) {
+    if (!result.isAllExist) {
         debug(`not exist dependencies: ${result.notExists}`)
+        module.exports.overwriteTransactionsMod = function () { }
         return false
     }
     return true

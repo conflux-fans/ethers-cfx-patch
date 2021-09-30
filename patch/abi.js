@@ -7,7 +7,6 @@ function overwriteAbiMod() {
         debug("address coder mod not exist")
         return 
     }
-    console.log("overwrite abi mod")
     _oEncode(addressCoderMod)
 }
 

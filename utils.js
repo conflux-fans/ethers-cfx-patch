@@ -42,6 +42,7 @@ function formatCfxAddressIfy(address, networkId) {
 
 function formatRecoverTx(tx) {
     let val = {};
+    val.nonce = 0
     val.to = undefined
     val.gasPrice = 0
     val.gas = 0
@@ -110,20 +111,18 @@ function requireIfy(name) {
 }
 
 function isPackagesExist(packages) {
-    // const requires = [
-    //     "@ethersproject/transactions",
-    //     "@ethersproject/bytes",
-    //     "@ethersproject/keccak256"
-    // ]
     const result = packages.map(requireIfy).reduce((acc, val, i) => {
+        // console.log("acc",acc)
         if (!val) {
             acc.notExists.push(packages[i])
             acc.isAllExist = false
         }
+        return acc
     }, {
         isAllExist: true,
         notExists: []
     })
+    
     return result
 }
 
@@ -138,7 +137,7 @@ function returnIfNotAllPackagesExists() {
         ]
     )
 
-    if (!result.isAllExists) {
+    if (!result.isAllExist) {
         debug(`not exist dependencies: ${result.notExists}`)
         module.exports = {
             isCfxTransaction,
@@ -153,6 +152,7 @@ function returnIfNotAllPackagesExists() {
             // hex2LittleEndingBuffer,
             // calcContractAddress,
             requireIfy,
+            isPackagesExist
         }
         return false
     }
